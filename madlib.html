@@ -1,0 +1,149 @@
+<html>
+<head>
+	<title>MadLib Example</title>
+	<style type="text/css">
+		/* http://meyerweb.com/eric/tools/css/reset/ 
+		   v2.0 | 20110126
+		   License: none (public domain)
+		*/
+		html, body, div, span, applet, object, iframe,
+		h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+		a, abbr, acronym, address, big, cite, code,
+		del, dfn, em, img, ins, kbd, q, s, samp,
+		small, strike, strong, sub, sup, tt, var,
+		b, u, i, center,
+		dl, dt, dd, ol, ul, li,
+		fieldset, form, label, legend,
+		table, caption, tbody, tfoot, thead, tr, th, td,
+		article, aside, canvas, details, embed, 
+		figure, figcaption, footer, header, hgroup, 
+		menu, nav, output, ruby, section, summary,
+		time, mark, audio, video {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			font-size: 100%;
+			font: inherit;
+			vertical-align: baseline;
+		}
+		/* HTML5 display-role reset for older browsers */
+		article, aside, details, figcaption, figure, 
+		footer, header, hgroup, menu, nav, section {
+			display: block;
+		}
+		body {
+			line-height: 1;
+		}
+		ol, ul {
+			list-style: none;
+		}
+		blockquote, q {
+			quotes: none;
+		}
+		blockquote:before, blockquote:after,
+		q:before, q:after {
+			content: '';
+			content: none;
+		}
+		table {
+			border-collapse: collapse;
+			border-spacing: 0;
+		}
+		
+		/*   END ERIC MEYER RESET CSS   */
+		
+		div.madLib { 
+			margin: 10px auto;
+			width: 500px;
+		}
+
+		div.madLib div.title {
+			font-size: 20px;
+			font-weight: bold;
+			padding-bottom: 20px;
+			text-align: center;
+		}
+
+		div.madLib span[data-ML] { 
+			font-weight: bold;
+			text-decoration: underline;
+		}
+
+		div.madlib span.sentence {
+			display: block;
+		}
+
+	</style>
+</head>
+<body>
+	<div id="madLibContent"></div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="jquery-animate-css-rotate-scale.js"></script>
+<script>
+	/***************************************/
+	/*
+			This will prevent jQuery from taking over the '$' if you are using a different
+			library, feel free to comment this out if you want to use '$' reference for jQuery
+	*/
+	/***************************************/
+	 //jQuery.noConflict();	
+</script>
+<script src="madLibEngine.js"></script>
+<script>
+
+	/*    Example		*/
+	
+	
+	//This is an override of the postFillHandler to add small delay when
+	//filling in the madlib words, this is a great place to get creative
+	madLibEngine.postFillHandler = function(element) {
+		
+		
+		setTimeout(function() { madLibEngine.fillNextWord(); }, 1000);
+	}
+
+
+	function onTemplateLoad(data) {
+		//this creates the list of words to use in the madLib
+		//it can use our database of words or you can supply your
+		//own list see the documentation in the engine for the format
+		//of the json data
+		madLibEngine.setupWordCollection({onload: function(){ render(data); } });
+	}
+
+	function render(data) {
+		
+		//takes the html string and turns it into a document fragement
+		//also sets up the collection of elements that will need a word
+		//added into
+		var fragment = madLibEngine.parseHTML(data);
+		
+		//appends the fragment to the dom
+		//this is optional at this step, if you append before you start
+		//filling out the words you will see them fill on screen, however
+		//you could fill out your madlib first then append it
+		jQuery('#madLibContent').append(fragment);
+		
+		
+		//start the process of filling out the words
+		madLibEngine.fillNextWord();
+	}
+
+	/*
+			The one requirement, make an AJAX call to get your madLib
+	*/
+	jQuery(function() {
+		
+		jQuery.ajax({
+		 	 url: madLibEngine.TEMPLATE_PATH
+			,success: onTemplateLoad
+		});
+		
+	});
+	
+
+
+	
+</script>
+</body>
